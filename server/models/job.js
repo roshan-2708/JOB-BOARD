@@ -18,10 +18,6 @@ const jobSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    salary:{
-        type:String,
-        required:true,
-    },
     currency:{
         type:String,
         required:true,
