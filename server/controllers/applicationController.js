@@ -80,10 +80,10 @@ exports.updateApplicationStatus = async (req, res) => {
         const applicationId = req.params.id;
         const { status } = req.body;
 
-        if (!['reviewed', 'accepted', 'rejected'].includes(status)){
+        if (!['reviewed', 'accepted', 'rejected'].includes(status)) {
             return res.status(400).json({
-                success:false,
-                message:"Invalid status provided",
+                success: false,
+                message: "Invalid status provided",
             });
         }
 
@@ -142,3 +142,29 @@ exports.updateApplicationStatus = async (req, res) => {
         });
     }
 }
+
+exports.getMyApplication = async (req, res) => {
+    try {
+        const application = await Application.find({ candidate: req.user_id }).populate({
+            path: 'job',
+            select: 'title location type salary isActive employer',
+            populate: {
+                path: 'employer',
+                select: 'name email',
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            count: application.length,
+            data: application,
+        });
+    } catch (error) {
+        console.log("Error in get my application controller", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+}
+
