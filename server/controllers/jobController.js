@@ -1,4 +1,5 @@
 const Job = require('../models/job');
+const Application = require('../models/application');
 
 exports.createJob = async (req, res) => {
     try {
@@ -95,6 +96,71 @@ exports.getJobById = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
+        });
+    }
+}
+
+exports.getEmployersJob = async (req, res) => {
+    try {
+        const jobs = await Job.find({ employer: req.user._id }).sort({ createdAt: -1 });
+
+        if (!jobs) {
+            return res.status(404).json({
+                success: false,
+                message: "No jobs found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Data fetched successfully",
+            data: jobs,
+            count: jobs.length,
+        });
+    } catch (error) {
+        console.error("Error in get employer jobs controller", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server issue",
+        });
+    }
+}
+
+exports.getJobApplications = async (req, res) => {
+    try {
+        const jobId = req.params.jobId;
+
+        const job = await Job.findById(jobId);
+
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: "Job is not found",
+            });
+        }
+
+        if (job.employer.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Access denied to view applications for this job"
+            })
+        }
+
+        const application = await Application.find({
+            job: jobId
+        }).populate('candidate', 'name email').sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            count: application.length,
+            data: application,
+        });
+
+    } catch (error) {
+        console.log("Error in get job application controller", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server issue",
         });
     }
 }
