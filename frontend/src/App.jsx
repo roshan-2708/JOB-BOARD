@@ -1,11 +1,19 @@
-import React from 'react'
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Home from './pages/Home';
+import NavBar from './components/NavBar';
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <h1 className='bg-blue-500 p-5 rounded-2xl'>Hello tailwind css</h1>
+    <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-center" /> 
+      <NavBar/>
+
+        <Routes>
+        <Route path="/" element={<Home/>} />
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
