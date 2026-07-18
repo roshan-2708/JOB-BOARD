@@ -9,7 +9,7 @@ export const authEndPoints = {
 }
 
 export const jobEndpoints = {
-    GET_ALL_JOBS: '/job/',
+    GET_ALL_JOBS: '/job',
     GET_JOB_BY_ID: '/job/:id',
     CREATE_JOB: '/job/create',
     GET_EMP_JOBS: '/job/employer/my-jobs',

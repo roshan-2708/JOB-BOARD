@@ -31,4 +31,13 @@ api.interceptors.response.use(
     }
 );
 
+export const apiConnection = (method, url, data = null, headers = {}) => {
+    return api({
+        method,
+        url,
+        data,
+        headers
+    });
+};
+
 export default api;
