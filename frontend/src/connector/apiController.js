@@ -140,9 +140,9 @@ export const applyForJob = async (jobId, file) => {
 
 export const updateApplicationStatus = async (applicationId, statusData) => {
     try {
-        const response = await apiConnection('PUT', UPDATE_APPLICATION_STATUS.replace(':id', applicationId, statusData, {
+        const response = await apiConnection('PUT', UPDATE_APPLICATION_STATUS.replace(':id', applicationId), statusData, {
             Authorization: `Bearer ${localStorage.getItem('token')}`
-        }));
+        });
         return response.data;
     } catch (error) {
         console.error("Update Application status Error : ", error.response?.data || error.message);
