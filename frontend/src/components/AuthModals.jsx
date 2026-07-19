@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Modal from './Modal';
-import api from '../utils/apiConnection'; // Axios instance
 import { AuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { Mail, Lock, User, Eye, EyeOff, Loader2, UserSearch, Building2 } from 'lucide-react';
+import { register, login as loginApi } from '../connector/apiController'; // adjust path to your controller file
 
 const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
     const { login } = useContext(AuthContext);
@@ -40,17 +40,19 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
         try {
             if (view === 'register') {
                 // Register API Call
-                const { data } = await api.post('/auth/register', formData);
-                login(data.data, data.token); // Context state update
+                const data = await register(formData);
+                const { token, ...userData } = data;
+                login(userData, token); // Context state update
                 toast.success("Account created successfully!");
             } else {
                 // Login API Call (Sirf email aur password bhejna hai)
-                const { data } = await api.post('/auth/login', {
+                const data = await loginApi({
                     email: formData.email,
                     password: formData.password
                 });
-                login(data.data, data.token); // Context state update
-                toast.success(`Welcome back, ${data.data.name}!`);
+                const { token, ...userData } = data;
+                login(userData, token); // Context state update
+                toast.success(`Welcome back, ${userData.name}!`);
             }
             onClose(); // Success par modal close kar do
 
@@ -63,7 +65,6 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
             setLoading(false);
         }
     };
-
     const inputClass =
         "w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 pr-4 font-body text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-amber-400 focus:ring-1 focus:ring-amber-400";
 
