@@ -145,7 +145,7 @@ exports.updateApplicationStatus = async (req, res) => {
 
 exports.getMyApplication = async (req, res) => {
     try {
-        const application = await Application.find({ candidate: req.user_id }).populate({
+        const application = await Application.find({ candidate: req.user._id }).populate({
             path: 'job',
             select: 'title location type salary isActive employer',
             populate: {
