@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import DasBoard from './pages/DasBoard';
+import JobApplications from './components/JobApplications';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/dashboard" element={<DasBoard />} />
+        <Route path='/employer/job/:jobId/applications' element={<JobApplications />} />
       </Routes>
 
       <Footer />

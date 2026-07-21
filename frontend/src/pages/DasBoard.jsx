@@ -12,9 +12,9 @@ import {
   IoCloseCircleOutline,
   IoHourglassOutline,
   IoSearchOutline,
-  IoPeopleOutline,
 } from 'react-icons/io5'
 import PostJob from '../components/PostJob';
+import { useNavigate } from 'react-router-dom'
 
 const STATUS_STYLES = {
   pending: { label: 'Pending', className: 'bg-amber-400/10 text-amber-400', Icon: IoHourglassOutline },
@@ -88,7 +88,6 @@ const DasBoard = () => {
     { id: 'profile', label: 'My Profile', Icon: IoPersonOutline },
     { id: 'post-job', label: 'Post a Job', Icon: IoAddCircleOutline },
     { id: 'my-jobs', label: 'My Posted Jobs', Icon: IoBriefcaseOutline },
-    { id: 'applications', label: 'Candidate Applications', Icon: IoPeopleOutline }
   ];
 
   const candidateTabs = [
@@ -105,6 +104,8 @@ const DasBoard = () => {
     'my-applications': 'My Applications',
     'applications': 'Candidate Applications',
   };
+
+  const navigate = useNavigate();
 
   if (authLoading) {
     return (
@@ -154,8 +155,8 @@ const DasBoard = () => {
                   key={id}
                   onClick={() => setActiveTab(id)}
                   className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-mono-ui text-sm transition-colors ${activeTab === id
-                      ? 'bg-amber-400 text-slate-950'
-                      : 'border border-slate-800 text-slate-400 hover:text-slate-100'
+                    ? 'bg-amber-400 text-slate-950'
+                    : 'border border-slate-800 text-slate-400 hover:text-slate-100'
                     }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -181,8 +182,8 @@ const DasBoard = () => {
                     key={id}
                     onClick={() => setActiveTab(id)}
                     className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left font-mono-ui text-sm transition-colors ${activeTab === id
-                        ? 'bg-amber-400/10 text-amber-400'
-                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'
+                      ? 'bg-amber-400/10 text-amber-400'
+                      : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'
                       }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -258,7 +259,8 @@ const DasBoard = () => {
                   dashboard.map((job) => (
                     <div
                       key={job._id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700"
+                      onClick={() => navigate(`/employer/job/${job._id}/applications`)}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700 cursor-pointer"
                     >
                       <div>
                         <p className="font-display text-base font-semibold text-slate-50">{job.title}</p>
@@ -276,18 +278,7 @@ const DasBoard = () => {
               </div>
             )}
 
-            {/* 4. Application of candidate */}
-            {activeTab === 'applications' && user.role === 'employer' && (
-              <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-800 py-20 text-center">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/10">
-                  <IoPeopleOutline className="h-5 w-5 text-amber-400" />
-                </span>
-                <h3 className="mt-4 font-display text-lg font-semibold text-slate-200">Candidate applications list coming soon.</h3>
-                <p className="mt-1.5 max-w-sm text-sm text-slate-500">
-                  Here you will be able to review applications submitted by candidates for your posted jobs.
-                </p>
-              </div>
-            )}
+            
 
             {/* 4. My Applications */}
             {activeTab === 'my-applications' && user.role === 'candidate' && (
