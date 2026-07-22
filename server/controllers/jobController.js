@@ -3,9 +3,9 @@ const Application = require('../models/application');
 
 exports.createJob = async (req, res) => {
     try {
-        const { title, description, location, salary, currency, requirements, type, experience, tags, skills, } = req.body;
+        const { title, description, location, salary, currency, requirements, type, experience, tags, skills, startingDate, closingDate } = req.body;
 
-        if (!title || !description || !location || !salary || !currency || !requirements || !type || !experience || !tags || !skills) {
+        if (!title || !description || !location || !salary || !currency || !requirements || !type || !experience || !tags || !skills || !startingDate || !closingDate) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
@@ -26,6 +26,8 @@ exports.createJob = async (req, res) => {
             experience,
             tags: formattedTags,
             skills: formattedSkills,
+            startingDate: new Date(startingDate),
+            closingDate: new Date(closingDate),
             employer: req.user._id
         });
 
@@ -158,6 +160,42 @@ exports.getJobApplications = async (req, res) => {
 
     } catch (error) {
         console.log("Error in get job application controller", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server issue",
+        });
+    }
+}
+
+exports.updatePostJob = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const updateData = req.body;
+
+        let job = await Job.findById(jobId);
+        if (!jobId) {
+            return res.status(404).json({
+                success: false,
+                message: "Job is not found",
+            });
+        }
+
+        if (job.employer.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to update this job",
+            });
+        }
+
+        job = await Job.findByIdAndUpdate(jobId, updateData, { new: true, runValidators: true });
+
+        return res.status(200).json({
+            success:true,
+            message:"Job updated successfully",
+            data:job,
+        })
+    } catch (error) {
+        console.error("Error in update posted job controller");
         return res.status(500).json({
             success: false,
             message: "Internal server issue",

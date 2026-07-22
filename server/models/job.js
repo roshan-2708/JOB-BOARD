@@ -6,31 +6,31 @@ const jobSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    description : {
-        type:String,
-        required:true,
+    description: {
+        type: String,
+        required: true,
     },
-    location:{
-        type:String,
-        required:true,
+    location: {
+        type: String,
+        required: true,
     },
-    salary:{
-        type:String,
-        required:true,
+    salary: {
+        type: String,
+        required: true,
     },
-    currency:{
-        type:String,
-        required:true,
+    currency: {
+        type: String,
+        required: true,
     },
-    requirements:{
-        type:String,
-        required:true,
+    requirements: {
+        type: String,
+        required: true,
     },
-    type:{
-        type:String,
-        required:true,
+    type: {
+        type: String,
+        required: true,
     },
-    
+
     experience: {
         type: String,
         required: true
@@ -51,10 +51,20 @@ const jobSchema = new mongoose.Schema({
         default: true
     },
 
+    startingDate: {
+        type: Date,
+        required: true
+    },
+
+    closingDate: {
+        type: Date,
+        required: true,
+    },
+
     employer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required:true,
+        required: true,
     }
 
 }, { timestamps: true });

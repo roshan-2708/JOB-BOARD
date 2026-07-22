@@ -80,7 +80,7 @@ exports.updateApplicationStatus = async (req, res) => {
         const applicationId = req.params.id;
         const { status } = req.body;
 
-        if (!['reviewed', 'accepted', 'rejected'].includes(status)) {
+        if (!['reviewed', 'accepted', 'rejected', 'shortlisted'].includes(status)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid status provided",
@@ -108,8 +108,11 @@ exports.updateApplicationStatus = async (req, res) => {
         let emailMessage = '';
 
         if (status === 'accepted') {
-            emailSubject = `Congratulations! You have been shortlisted for ${jobTitle}`;
+            emailSubject = `Congratulations! You have been accepted for ${jobTitle}`;
             emailMessage = `Hello ${candidateName},\n\nGreat news! Your application for the position of ${jobTitle} has been accepted. The employer will contact you shortly for the next steps.\n\nBest Regards,\nJob Board Team`;
+        } else if (status === 'shortlisted') {
+            emailSubject = `Congratulations! You have been shortlisted for ${jobTitle}`;
+            emailMessage = `Hello ${candidateName},\n\nGreat news! Your application for the position of ${jobTitle} has been shortlisted. The employer will contact you shortly for the next steps.\n\nBest Regards,\nJob Board Team`;
         } else if (status === 'rejected') {
             emailSubject = `Update on your application for ${jobTitle}`;
             emailMessage = `Hello ${candidateName},\n\nThank you for applying for the ${jobTitle} position. Unfortunately, the employer has decided to move forward with other candidates at this time.\n\nKeep applying and best of luck with your job search!\n\nBest Regards,\nJob Board Team`;
