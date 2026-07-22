@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { postJob } from '../connector/apiController';
 import toast from 'react-hot-toast';
 import {
-  IoBriefcaseOutline,
-  IoLocationOutline,
-  IoCashOutline,
-  IoTimeOutline,
-  IoPricetagOutline,
-  IoBuildOutline,
+    IoBriefcaseOutline,
+    IoLocationOutline,
+    IoCashOutline,
+    IoTimeOutline,
+    IoPricetagOutline,
+    IoBuildOutline,
 } from 'react-icons/io5'
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship'];
@@ -27,6 +27,8 @@ const PostJob = () => {
         experience: '',
         tags: '',
         skills: '',
+        startingDate: '',
+        closingDate: '',
     });
 
     const handleChange = (e) => {
@@ -250,6 +252,33 @@ const PostJob = () => {
                                 />
                             </div>
                             <p className="mt-1 text-xs text-slate-600">Comma-separated.</p>
+                        </div>
+                    </div>
+
+                    <div className='grid gap-4 sm:grid-cols-2'>
+                        <div>
+                            <label htmlFor="startingDate" className={labelClass}>Starting Date</label>
+                            <input
+                                type="date"
+                                name="startingDate"
+                                id="startingDate"
+                                value={formData.startingDate}
+                                onChange={handleChange}
+                                required
+                                className={inputClass}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="closingDate" className={labelClass}>Closing Date</label>
+                            <input
+                                type="date"
+                                name="closingDate"
+                                id="closingDate"
+                                value={formData.closingDate}
+                                onChange={handleChange}
+                                required
+                                className={inputClass}
+                            />
                         </div>
                     </div>
 

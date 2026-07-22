@@ -49,6 +49,7 @@ const {
     CREATE_JOB,
     GET_EMP_JOBS,
     GET_JOB_APPLICATIONS,
+    UPDATE_JOB,
 } = jobEndpoints;
 
 export const getAllJobs = async () => {
@@ -111,6 +112,18 @@ export const getJobApplication = async (jobId) => {
     }
 }
 
+export const updateJob = async (jobId, jobData) => {
+    try {
+        const response = await apiConnection('PUT', UPDATE_JOB.replace(':jobId', jobId), jobData, {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        })
+        return response.data;
+    } catch (error) {
+        console.error('Update Job Error', error.response?.data || error.message);
+        throw error;
+    }
+}
+
 // application endpoints
 
 const {
@@ -140,7 +153,8 @@ export const applyForJob = async (jobId, file) => {
 
 export const updateApplicationStatus = async (applicationId, statusData) => {
     try {
-        const response = await apiConnection('PUT', UPDATE_APPLICATION_STATUS.replace(':id', applicationId), statusData, {
+        const payload = typeof statusData === 'string' ? { status: statusData } : statusData;
+        const response = await apiConnection('PUT', UPDATE_APPLICATION_STATUS.replace(':id', applicationId), payload, {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         });
         return response.data;

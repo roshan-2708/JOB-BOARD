@@ -12,6 +12,7 @@ import {
   IoCloseCircleOutline,
   IoHourglassOutline,
   IoSearchOutline,
+  IoCalendarOutline,
 } from 'react-icons/io5'
 import PostJob from '../components/PostJob';
 import { useNavigate } from 'react-router-dom'
@@ -58,6 +59,8 @@ const DasBoard = () => {
   const [dashboard, setDashboard] = useState([]);
   const [dataLoading, setDataLoading] = useState(false);
 
+
+
   useEffect(() => {
     if (!user) return;
 
@@ -81,6 +84,30 @@ const DasBoard = () => {
       fetchDashboardData();
     }
   }, [activeTab, user]);
+
+  const jobStatus = (startingDateString, closingDateString) => {
+    if (!startingDateString || !closingDateString) return "Open";
+    const now = new Date();
+    const startDate = new Date(startingDateString);
+    const closeDate = new Date(closingDateString);
+
+    if (now < startDate) return "Coming Soon";
+    else if (now > closeDate) return "Closed";
+    else return "Open";
+  }
+
+  const getStatusOrder = (status) => {
+    switch (status) {
+      case "Open":
+        return "bg-emerald-400/10 text-emerald-400";
+      case "Coming Soon":
+        return "bg-amber-400/10 text-amber-400";
+      case "Closed":
+        return "bg-red-400/10 text-red-400";
+      default:
+        return "bg-slate-400/10 text-slate-400";
+    }
+  }
 
   const initial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
 
@@ -106,6 +133,17 @@ const DasBoard = () => {
   };
 
   const navigate = useNavigate();
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',   // 1, 2, 31
+      month: 'short',   // Jan, Feb, Aug
+      year: 'numeric'   // 2026
+    });
+  };
 
   if (authLoading) {
     return (
@@ -256,29 +294,42 @@ const DasBoard = () => {
                     copy="Once you post a role, it'll show up here so you can track it."
                   />
                 ) : (
-                  dashboard.map((job) => (
-                    <div
-                      key={job._id}
-                      onClick={() => navigate(`/employer/job/${job._id}/applications`)}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700 cursor-pointer"
-                    >
-                      <div>
-                        <p className="font-display text-base font-semibold text-slate-50">{job.title}</p>
-                        <p className="mt-1 flex items-center gap-1.5 font-mono-ui text-xs text-slate-500">
-                          <IoCashOutline className="h-3.5 w-3.5" />
-                          {job.salary}
-                        </p>
+                  dashboard.map((job) => {
+                    const status = jobStatus(job.startingDate, job.closingDate);
+                    return (
+                      <div
+                        key={job._id}
+                        onClick={() => navigate(`/employer/job/${job._id}/applications`)}
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700 cursor-pointer"
+                      >
+                        <div>
+                          <p className="font-display text-base font-semibold text-slate-50">{job.title}</p>
+                          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-mono-ui text-slate-500">
+                            <p className="flex items-center gap-1.5">
+                              <IoCashOutline className="h-3.5 w-3.5" />
+                              {job.salary}
+                            </p>
+                            <p className="flex items-center gap-1.5">
+                              <IoCalendarOutline className="h-3.5 w-3.5" />
+                              {formatDate(job.startingDate)} - {formatDate(job.closingDate)}
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`rounded px-2.5 py-1 font-mono-ui text-[11px] font-medium ${getStatusOrder(status)}`}>
+                          {status}
+                        </span>
+
+                        <button>
+                          Update
+                        </button>
                       </div>
-                      <span className="rounded bg-emerald-400/10 px-2 py-1 font-mono-ui text-[11px] font-medium text-emerald-400">
-                        Open
-                      </span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             )}
 
-            
+
 
             {/* 4. My Applications */}
             {activeTab === 'my-applications' && user.role === 'candidate' && (

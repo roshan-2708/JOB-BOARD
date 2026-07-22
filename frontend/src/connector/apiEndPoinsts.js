@@ -14,6 +14,7 @@ export const jobEndpoints = {
     CREATE_JOB: '/job/create',
     GET_EMP_JOBS: '/job/employer/my-jobs',
     GET_JOB_APPLICATIONS: '/job/application/:jobId',
+    UPDATE_JOB : '/job/update/:id',
 }
 
 export const applicationEndPoints = {

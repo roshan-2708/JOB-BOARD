@@ -5,8 +5,9 @@ import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import DasBoard from './pages/DasBoard';
+import DashBoard from './pages/DashBoard';
 import JobApplications from './components/JobApplications';
+import Companies from './pages/Companies';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/dashboard" element={<DasBoard />} />
+        <Route path="/dashboard" element={<DashBoard />} />
+        <Route path='/companies' element={<Companies />} />
         <Route path='/employer/job/:jobId/applications' element={<JobApplications />} />
       </Routes>
 
