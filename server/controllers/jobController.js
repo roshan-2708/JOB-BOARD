@@ -173,7 +173,8 @@ exports.updatePostJob = async (req, res) => {
         const updateData = req.body;
 
         let job = await Job.findById(jobId);
-        if (!jobId) {
+        
+        if (!job) {
             return res.status(404).json({
                 success: false,
                 message: "Job is not found",

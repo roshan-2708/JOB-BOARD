@@ -114,7 +114,7 @@ export const getJobApplication = async (jobId) => {
 
 export const updateJob = async (jobId, jobData) => {
     try {
-        const response = await apiConnection('PUT', UPDATE_JOB.replace(':jobId', jobId), jobData, {
+        const response = await apiConnection('PUT', UPDATE_JOB.replace(':id', jobId), jobData, {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         })
         return response.data;

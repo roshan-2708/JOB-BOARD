@@ -300,28 +300,41 @@ const DasBoard = () => {
                       <div
                         key={job._id}
                         onClick={() => navigate(`/employer/job/${job._id}/applications`)}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700 cursor-pointer"
+                        className="group flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-amber-400/40 cursor-pointer"
                       >
-                        <div>
-                          <p className="font-display text-base font-semibold text-slate-50">{job.title}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-display text-base font-semibold text-slate-50 truncate">
+                            {job.title}
+                          </p>
                           <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-mono-ui text-slate-500">
                             <p className="flex items-center gap-1.5">
-                              <IoCashOutline className="h-3.5 w-3.5" />
+                              <IoCashOutline className="h-3.5 w-3.5 text-amber-400/70" />
                               {job.salary}
                             </p>
                             <p className="flex items-center gap-1.5">
-                              <IoCalendarOutline className="h-3.5 w-3.5" />
+                              <IoCalendarOutline className="h-3.5 w-3.5 text-amber-400/70" />
                               {formatDate(job.startingDate)} - {formatDate(job.closingDate)}
                             </p>
                           </div>
                         </div>
-                        <span className={`rounded px-2.5 py-1 font-mono-ui text-[11px] font-medium ${getStatusOrder(status)}`}>
-                          {status}
-                        </span>
 
-                        <button>
-                          Update
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`rounded-full border px-3 py-1 font-mono-ui text-[11px] font-medium uppercase tracking-wide ${getStatusOrder(status)}`}
+                          >
+                            {status}
+                          </span>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/employer/job/update/${job._id}`);
+                            }}
+                            className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 font-mono-ui text-xs font-semibold uppercase tracking-wide text-slate-300 transition-colors hover:border-amber-400 hover:bg-amber-400 hover:text-slate-950"
+                          >
+                            Update
+                          </button>
+                        </div>
                       </div>
                     );
                   })
