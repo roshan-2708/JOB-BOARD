@@ -43,7 +43,10 @@ exports.register = async (req, res) => {
             verifyTokenExpires,
         });
 
-        const frontendUrl = process.env.FRONTEND_URL;
+        let frontendUrl = process.env.FRONTEND_URL;
+        if (!frontendUrl.startsWith('http://') && !frontendUrl.startsWith('https://')) {
+            frontendUrl = `https://${frontendUrl}`;
+        }
         const verificationUrl = `${frontendUrl}/verify-email?token=${verifyToken}`;
 
         try {
