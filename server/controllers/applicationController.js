@@ -39,7 +39,7 @@ exports.applyForJob = async (req, res) => {
         const alreadyApplied = await Application.findOne({ job: jobId, candidate: candidateId });
 
         if (alreadyApplied) {
-            return res, status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'You have already applied for this job',
             });

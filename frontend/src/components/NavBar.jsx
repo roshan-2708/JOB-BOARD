@@ -18,7 +18,6 @@ const NavBar = () => {
     const navLinks = [
         { label: 'About', to: '/about' },
         { label: 'Find Jobs', to: '/jobs' },
-        { label: 'Category', to: '/category' },
         { label: 'Companies', to: '/companies' },
         { label: 'Contact', to: '/contact' },
     ]

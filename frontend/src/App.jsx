@@ -10,7 +10,6 @@ import JobApplications from './components/JobApplications';
 import Companies from './pages/Companies';
 import UpdateJob from './components/UpdateJob';
 import FindJobs from './pages/FindJobs';
-import Category from './pages/Category';
 import JobDeatils from './pages/JobDeatils';
 
 function App() {
@@ -27,7 +26,6 @@ function App() {
         <Route path='/companies' element={<Companies />} />
         <Route path='/employer/job/update/:jobId' element={<UpdateJob />} />
         <Route path='/Jobs' element={<FindJobs />} />
-        <Route path='/Category' element={<Category />} />
         <Route path='/job/:jobId' element={<JobDeatils />} />
         <Route path='/employer/job/:jobId/applications' element={<JobApplications />} />
       </Routes>
