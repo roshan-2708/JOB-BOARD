@@ -6,6 +6,7 @@ export const authEndPoints = {
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     GET_ME: '/auth/me',
+    VERIFY_EMAIL: '/auth/verify-email',
 }
 
 export const jobEndpoints = {

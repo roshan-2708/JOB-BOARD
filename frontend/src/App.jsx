@@ -11,6 +11,7 @@ import Companies from './pages/Companies';
 import UpdateJob from './components/UpdateJob';
 import FindJobs from './pages/FindJobs';
 import JobDeatils from './pages/JobDeatils';
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
         <Route path='/Jobs' element={<FindJobs />} />
         <Route path='/job/:jobId' element={<JobDeatils />} />
         <Route path='/employer/job/:jobId/applications' element={<JobApplications />} />
+        <Route path='/verify-email' element={<VerifyEmail />} />
+        <Route path='/verify-email/:token' element={<VerifyEmail />} />
       </Routes>
 
       <Footer />

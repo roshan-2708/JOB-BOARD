@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema({
         enum: ['employer', 'candidate'],
         required: true
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    verifyToken: {
+        type: String,
+    },
+    verifyTokenExpires: {
+        type: Date,
+    },
 }, { timestamps: true });
 
 userSchema.pre('save', async function () {

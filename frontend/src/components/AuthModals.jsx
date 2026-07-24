@@ -41,11 +41,10 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
             if (view === 'register') {
                 // Register API Call
                 const data = await register(formData);
-                const { token, ...userData } = data;
-                login(userData, token); // Context state update
-                toast.success("Account created successfully!");
+                toast.success(data?.message || "Registration successful! Check your email.");
+                setView('verify-notice');
             } else {
-                // Login API Call (Sirf email aur password bhejna hai)
+                // Login API Call
                 const data = await loginApi({
                     email: formData.email,
                     password: formData.password
@@ -53,12 +52,11 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
                 const { token, ...userData } = data;
                 login(userData, token); // Context state update
                 toast.success(`Welcome back, ${userData.name}!`);
+                onClose(); // Success par modal close kar do
             }
-            onClose(); // Success par modal close kar do
 
         } catch (error) {
             console.error("Auth Error:", error);
-            // Backend se aane wala exact error message dikhao
             const errorMessage = error.response?.data?.message || "Something went wrong!";
             toast.error(errorMessage);
         } finally {
@@ -71,33 +69,54 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="w-full">
-                <div className="mb-6 text-center">
-                    <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/10">
-                        <Lock className="h-5 w-5 text-amber-400" strokeWidth={2} />
-                    </span>
-                    <h2 className="font-display text-xl font-semibold text-slate-50">
-                        {view === 'login' ? 'Welcome back' : 'Create your account'}
-                    </h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                        {view === 'login'
-                            ? 'Log in to manage your jobs and applications.'
-                            : 'Join to find or post your next open role.'}
-                    </p>
-                </div>
+                {view === 'verify-notice' ? (
+                    <div className="text-center py-4">
+                        <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                            <Mail className="h-7 w-7 text-emerald-400 animate-bounce" />
+                        </span>
+                        <h2 className="font-display text-xl font-bold text-slate-50">
+                            Check Your Email
+                        </h2>
+                        <p className="mt-2 text-sm text-slate-300 max-w-sm mx-auto leading-relaxed">
+                            We've sent a verification link to <span className="font-semibold text-amber-400">{formData.email}</span>. Please click the link to verify your account before logging in.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => setView('login')}
+                            className="mt-6 w-full rounded-lg bg-amber-400 py-2.5 font-mono-ui text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-300"
+                        >
+                            Proceed to Login
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <div className="mb-6 text-center">
+                            <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/10">
+                                <Lock className="h-5 w-5 text-amber-400" strokeWidth={2} />
+                            </span>
+                            <h2 className="font-display text-xl font-semibold text-slate-50">
+                                {view === 'login' ? 'Welcome back' : 'Create your account'}
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500">
+                                {view === 'login'
+                                    ? 'Log in to manage your jobs and applications.'
+                                    : 'Join to find or post your next open role.'}
+                            </p>
+                        </div>
 
-                {/* Toggle Buttons */}
-                <div className="mb-6 flex rounded-lg border border-slate-800 bg-slate-900 p-1">
-                    <button
-                        type="button"
-                        onClick={() => setView('login')}
-                        className={`flex-1 rounded-md py-2 font-mono-ui text-sm font-medium transition-all ${
-                            view === 'login' ? 'bg-amber-400 text-slate-950' : 'text-slate-400 hover:text-slate-100'
-                        }`}
-                    >
-                        Login
-                    </button>
-                    <button
-                        type="button"
+                        {/* Toggle Buttons */}
+                        <div className="mb-6 flex rounded-lg border border-slate-800 bg-slate-900 p-1">
+                            <button
+                                type="button"
+                                onClick={() => setView('login')}
+                                className={`flex-1 rounded-md py-2 font-mono-ui text-sm font-medium transition-all ${
+                                    view === 'login' ? 'bg-amber-400 text-slate-950' : 'text-slate-400 hover:text-slate-100'
+                                }`}
+                            >
+                                Login
+                            </button>
+                            <button
+                                type="button"
                         onClick={() => setView('register')}
                         className={`flex-1 rounded-md py-2 font-mono-ui text-sm font-medium transition-all ${
                             view === 'register' ? 'bg-amber-400 text-slate-950' : 'text-slate-400 hover:text-slate-100'
@@ -228,8 +247,10 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
                         )}
                     </button>
                 </form>
-            </div>
-        </Modal>
+            </>
+        )}
+    </div>
+</Modal>
     );
 };
 

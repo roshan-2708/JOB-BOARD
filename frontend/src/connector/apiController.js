@@ -6,7 +6,8 @@ import { authEndPoints, jobEndpoints, applicationEndPoints } from './apiEndPoins
 const {
     REGISTER,
     LOGIN,
-    GET_ME
+    GET_ME,
+    VERIFY_EMAIL,
 } = authEndPoints;
 
 export const register = async (userData) => {
@@ -37,6 +38,16 @@ export const fetchMe = async () => {
         return response.data;
     } catch (error) {
         console.error('fetchMe error :', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export const verifyEmailApi = async (token) => {
+    try {
+        const response = await apiConnection("GET", `${VERIFY_EMAIL}/${token}`);
+        return response.data;
+    } catch (error) {
+        console.error('Verify Email Error: ', error.response?.data || error.message);
         throw error;
     }
 }
