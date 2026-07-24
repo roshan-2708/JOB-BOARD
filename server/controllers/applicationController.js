@@ -93,6 +93,10 @@ exports.updateApplicationStatus = async (req, res) => {
             return res.status(404).json({ success: false, message: "Application not found" });
         }
 
+        if (!application.job || !application.job.employer) {
+            return res.status(400).json({ success: false, message: "Associated job or employer details missing" });
+        }
+
         if (application.job.employer.toString() !== req.user._id.toString()) {
             return res.status(403).json({ success: false, message: "Not authorized to update this application" });
         }
@@ -100,9 +104,9 @@ exports.updateApplicationStatus = async (req, res) => {
         application.status = status;
         await application.save();
 
-        const candidateEmail = application.candidate.email;
-        const candidateName = application.candidate.name;
-        const jobTitle = application.job.title;
+        const candidateEmail = application.candidate ? application.candidate.email : null;
+        const candidateName = application.candidate ? application.candidate.name : 'Applicant';
+        const jobTitle = application.job ? application.job.title : 'Position';
 
         let emailSubject = '';
         let emailMessage = '';
@@ -121,19 +125,25 @@ exports.updateApplicationStatus = async (req, res) => {
             emailMessage = `Hello ${candidateName},\n\nThe employer has started reviewing your application for the ${jobTitle} position. We will keep you updated on the final status.\n\nBest Regards,\nJob Board Team`;
         }
 
-        try {
-            await sendEmail({
-                email: candidateEmail,
-                subject: emailSubject,
-                message: emailMessage,
-            });
-        } catch (emailError) {
-            console.error("Email could not be sent:", emailError);
+        let emailSent = false;
+        if (candidateEmail) {
+            try {
+                await sendEmail({
+                    email: candidateEmail,
+                    subject: emailSubject,
+                    message: emailMessage,
+                });
+                emailSent = true;
+            } catch (emailError) {
+                console.error("Email could not be sent:", emailError?.response?.body || emailError?.message || emailError);
+            }
         }
 
         res.status(200).json({
             success: true,
-            message: `Application marked as ${status} and email sent to candidate`,
+            message: emailSent
+                ? `Application marked as ${status} and email sent to candidate`
+                : `Application marked as ${status}, but candidate email could not be delivered`,
             data: application
         });
 

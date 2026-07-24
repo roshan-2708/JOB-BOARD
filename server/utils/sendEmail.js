@@ -5,33 +5,34 @@ const sendEmail = async (options) => {
         const client = SibApiV3Sdk.ApiClient.instance;
 
         const apiKey = client.authentications["api-key"];
-        apiKey.apiKey = process.env.BREVO_API_KEY; 
+        apiKey.apiKey = process.env.BREVO_API_KEY;
 
         const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        const sender = {
-            email: process.env.MAIL_USER, 
-            name: "Job-Board"
+        const senderEmail = process.env.MAIL_USER || process.env.SENDER_EMAIL;
+        const senderName = process.env.SENDER_NAME || "Job Board Team";
+
+        sendSmtpEmail.sender = {
+            email: senderEmail,
+            name: senderName
         };
 
-        const receivers = [
-            {
-                email: options.email 
-            }
-        ];
+        sendSmtpEmail.to = [{ email: options.email }];
+        sendSmtpEmail.subject = options.subject;
+        sendSmtpEmail.textContent = options.message;
+        sendSmtpEmail.htmlContent = options.html || `<div style="font-family: sans-serif; font-size: 15px; color: #333; line-height: 1.6;">${(options.message || '').replace(/\n/g, '<br>')}</div>`;
 
         // API Call
-        const data = await emailApi.sendTransacEmail({
-            sender,
-            to: receivers,
-            subject: options.subject,
-            textContent: options.message
-        });
+        const data = await emailApi.sendTransacEmail(sendSmtpEmail);
 
         console.log("✅ Email sent successfully! Message ID:", data.messageId);
+        return data;
 
     } catch (error) {
-        console.error("❌ Email Error:", error.response ? error.response.text : error.message);
+        const detail = error.response ? (error.response.body || error.response.text) : error.message;
+        console.error("❌ Email Error:", detail);
+        throw error;
     }
 };
 

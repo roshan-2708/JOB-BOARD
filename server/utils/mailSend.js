@@ -6,8 +6,7 @@ const mailSender = async (email, title, body) => {
 
         // API Key setup
         const apiKey = defaultClient.authentications['api-key'];
-        // apiKey.apiKey = process.env.MAIL_PASS; // Aapki v3 API Key yahan jayegi
-        apiKey.apiKey = process.env.BREVO_API_KEY; // ✅ correct
+        apiKey.apiKey = process.env.BREVO_API_KEY; 
 
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
@@ -15,7 +14,7 @@ const mailSender = async (email, title, body) => {
         // Email Configuration
         sendSmtpEmail.subject = title;
         sendSmtpEmail.htmlContent = body;
-        sendSmtpEmail.sender = { "name": "PORTFOLIO BUILDER", "email": process.env.MAIL_USER };
+        sendSmtpEmail.sender = { "name": "Job Lane", "email": process.env.MAIL_USER };
         sendSmtpEmail.to = [{ "email": email }];
 
         // Send call
