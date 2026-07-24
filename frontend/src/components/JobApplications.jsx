@@ -88,8 +88,11 @@ const JobApplications = () => {
             toast.error("Resume not available");
             return;
         }
-        const googleViewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`;
-        window.open(googleViewUrl, "_blank", "noopener,noreferrer");
+        let targetUrl = resumeUrl;
+        if (targetUrl.includes('/image/upload/') && targetUrl.endsWith('.pdf')) {
+            targetUrl = targetUrl.replace(/\.pdf$/i, '.jpg');
+        }
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
     }
 
     const handleUpdateStatus = async (applicationId, newStatus) => {

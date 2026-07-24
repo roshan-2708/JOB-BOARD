@@ -4,10 +4,13 @@ const cloudinary = require('../config/cloudinary');
 const { Readable } = require('stream');
 const sendEmail = require('../utils/sendEmail');
 
-const streamUpload = (fileBuffer) => {
+const streamUpload = (fileBuffer, isPdf) => {
     return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream(
-            { folder: 'job_board_resumes', resource_type: 'auto' },
+            { 
+                folder: 'job_board_resumes', 
+                resource_type: isPdf ? 'raw' : 'auto' 
+            },
             (error, result) => {
                 if (result) {
                     resolve(result);
@@ -51,12 +54,17 @@ exports.applyForJob = async (req, res) => {
                 message: "Please upload your resume",
             });
         }
-        const uploadResult = await streamUpload(req.file.buffer);
+        const isPdf = req.file.mimetype === 'application/pdf' || req.file.originalname?.toLowerCase().endsWith('.pdf');
+        const uploadResult = await streamUpload(req.file.buffer, isPdf);
+        let secureUrl = uploadResult.secure_url;
+        if (isPdf && !secureUrl.endsWith('.pdf')) {
+            secureUrl = `${secureUrl}.pdf`;
+        }
 
         const application = await Application.create({
             job: jobId,
             candidate: candidateId,
-            resumeUrl: uploadResult.secure_url,
+            resumeUrl: secureUrl,
         });
 
 
