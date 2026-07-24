@@ -24,9 +24,46 @@ exports.register = async (req, res) => {
         const userExist = await User.findOne({ email });
 
         if (userExist) {
+            if (!userExist.isVerified) {
+                // Generate fresh token and resend verification email
+                const newVerifyToken = crypto.randomBytes(32).toString('hex');
+                userExist.verifyToken = newVerifyToken;
+                userExist.verifyTokenExpires = Date.now() + 15 * 60 * 1000;
+                await userExist.save();
+
+                const verificationUrl = `${frontendUrl}/verify-email?token=${newVerifyToken}`;
+
+                try {
+                    await sendEmail({
+                        email: userExist.email,
+                        subject: 'Verify Your Email Address - Job Board',
+                        message: `Hello ${userExist.name},\n\nPlease click the link below to verify your email address:\n${verificationUrl}\n\nThis link is valid for 15 minutes.`,
+                        html: `
+                            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                                <h2 style="color: #2563eb;">Verify Your Email, ${userExist.name}!</h2>
+                                <p>An account with this email exists but is not verified yet. Please click the button below to verify your account:</p>
+                                <div style="text-align: center; margin: 25px 0;">
+                                    <a href="${verificationUrl}" style="padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Verify Email Address</a>
+                                </div>
+                                <p style="color: #666; font-size: 13px;">This link is valid for 15 minutes.</p>
+                                <p style="color: #888; font-size: 12px; word-break: break-all;">Link: <a href="${verificationUrl}">${verificationUrl}</a></p>
+                            </div>
+                        `
+                    });
+                } catch (e) {
+                    console.error("Resend verification email failed:", e);
+                }
+
+                return res.status(200).json({
+                    success: true,
+                    isUnverified: true,
+                    message: "An account with this email exists but is unverified. We have sent a new verification link to your email!"
+                });
+            }
+
             return res.status(400).json({
                 success: false,
-                message: "User already exists",
+                message: "User already exists. Please log in.",
             });
         }
 
@@ -203,3 +240,57 @@ exports.getUserProfile = async (req, res) => {
         })
     }
 }
+
+exports.resendVerificationEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Please provide an email address" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "No account found with this email address" });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: "This email address is already verified. Please log in." });
+        }
+
+        const verifyToken = crypto.randomBytes(32).toString('hex');
+        user.verifyToken = verifyToken;
+        user.verifyTokenExpires = Date.now() + 15 * 60 * 1000;
+        await user.save();
+
+        let frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        if (!frontendUrl.startsWith('http://') && !frontendUrl.startsWith('https://')) {
+            frontendUrl = `https://${frontendUrl}`;
+        }
+        const verificationUrl = `${frontendUrl}/verify-email?token=${verifyToken}`;
+
+        await sendEmail({
+            email: user.email,
+            subject: 'Verify Your Email Address - Job Board',
+            message: `Hello ${user.name},\n\nPlease click the link below to verify your email address:\n${verificationUrl}\n\nThis link is valid for 15 minutes.`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <h2 style="color: #2563eb;">Verify Your Email, ${user.name}!</h2>
+                    <p>Please click the button below to verify your email address and activate your account:</p>
+                    <div style="text-align: center; margin: 25px 0;">
+                        <a href="${verificationUrl}" style="padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Verify Email Address</a>
+                    </div>
+                    <p style="color: #666; font-size: 13px;">This link is valid for 15 minutes.</p>
+                    <p style="color: #888; font-size: 12px; word-break: break-all;">Link: <a href="${verificationUrl}">${verificationUrl}</a></p>
+                </div>
+            `
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "A new verification email has been sent to your inbox!"
+        });
+    } catch (error) {
+        console.error("Error in resend verification email:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
