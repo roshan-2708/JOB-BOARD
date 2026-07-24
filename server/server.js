@@ -6,7 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const applicationRoutes = require('./routes/applicationRoute');
 
-
+// Environment configuration loaded
 dotenv.config();
 const app = express();
 
